@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>創意組線上報名查詢</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Playfair+Display:wght@600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0d1b2a;
+    --surface:  #142233;
+    --surface2: #1a2d42;
+    --border:   #1f3550;
+    --accent:   #00c8a8;
+    --accent2:  #007ee5;
+    --text:     #ddeeff;
+    --muted:    #5d84a8;
+    --success:  #00d9b0;
+    --error:    #ff6b72;
+    --radius:   14px;
+    --shadow:   0 24px 64px rgba(0,0,0,0.55);
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    font-family: 'Noto Sans TC', sans-serif;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(16px, 4vw, 40px);
+    background-image:
+      radial-gradient(ellipse 70% 55% at 10% 15%, rgba(0,200,168,0.06) 0%, transparent 65%),
+      radial-gradient(ellipse 55% 45% at 90% 85%, rgba(0,126,229,0.07) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 35% at 50% 50%, rgba(0,50,100,0.12) 0%, transparent 70%);
+  }
+
+  /* ── Card ── */
+  .card {
+    width: 100%;
+    max-width: 540px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: clamp(16px, 3vw, 24px);
+    padding: clamp(28px, 6vw, 52px) clamp(20px, 6vw, 44px);
+    box-shadow: var(--shadow);
+    animation: fadeUp .55s cubic-bezier(.22,.68,0,1.2) both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(28px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* ── Header ── */
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: clamp(20px, 4vw, 30px);
+  }
+  .logo-icon {
+    flex-shrink: 0;
+    width: clamp(34px, 6vw, 42px);
+    height: clamp(34px, 6vw, 42px);
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: clamp(15px, 3vw, 18px);
+  }
+  .logo-text {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(14px, 3.5vw, 19px);
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  h1 {
+    font-size: clamp(20px, 5vw, 26px);
+    font-weight: 700;
+    margin-bottom: 7px;
+    line-height: 1.3;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: clamp(12px, 2.5vw, 14px);
+    margin-bottom: clamp(22px, 5vw, 34px);
+    line-height: 1.7;
+  }
+
+  /* ── Form ── */
+  .field { margin-bottom: clamp(14px, 3vw, 20px); }
+
+  label {
+    display: block;
+    font-size: clamp(10px, 2vw, 12px);
+    font-weight: 600;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 7px;
+  }
+
+  input, select {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: clamp(10px, 2.5vw, 13px) clamp(12px, 3vw, 16px);
+    font-size: clamp(13px, 3vw, 15px);
+    color: var(--text);
+    font-family: inherit;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: border-color .2s, box-shadow .2s, background .2s;
+  }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%235d84a8' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-color: rgba(255,255,255,0.04);
+    padding-right: 38px;
+    cursor: pointer;
+  }
+  select option { background: #142233; color: var(--text); }
+  select:disabled { opacity: .35; cursor: not-allowed; }
+
+  input:focus, select:focus {
+    border-color: var(--accent);
+    background: rgba(0,200,168,0.05);
+    box-shadow: 0 0 0 3px rgba(0,200,168,0.14);
+  }
+  input::placeholder { color: var(--muted); opacity: .7; }
+
+  /* ── Two-column layout on wider screens ── */
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: clamp(10px, 2vw, 14px);
+    margin-bottom: clamp(14px, 3vw, 20px);
+    align-items: end;
+  }
+  @media (max-width: 420px) {
+    .field-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ── Button ── */
+  button {
+    width: 100%;
+    margin-top: clamp(6px, 2vw, 10px);
+    padding: clamp(12px, 3vw, 15px);
+    border: none;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+    color: #fff;
+    font-size: clamp(13px, 3vw, 15px);
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: .04em;
+    transition: opacity .2s, transform .15s, box-shadow .2s;
+    box-shadow: 0 4px 20px rgba(0,200,168,0.22);
+  }
+  button:hover:not(:disabled) {
+    opacity: .88;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(0,200,168,0.3);
+  }
+  button:active:not(:disabled) { transform: translateY(0); }
+  button:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+
+  /* ── Result ── */
+  .result {
+    margin-top: clamp(18px, 4vw, 26px);
+    border-radius: var(--radius);
+    padding: clamp(14px, 3vw, 20px) clamp(14px, 3.5vw, 22px);
+    display: none;
+  }
+  .result.show {
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(10px, 3vw, 16px);
+    animation: fadeUp .35s ease both;
+  }
+  .result.success {
+    background: rgba(0,217,176,.09);
+    border: 1px solid rgba(0,217,176,.28);
+  }
+  .result.fail {
+    background: rgba(255,107,114,.09);
+    border: 1px solid rgba(255,107,114,.28);
+  }
+  .result-icon { font-size: clamp(22px, 5vw, 28px); flex-shrink: 0; line-height: 1; }
+  .result-title {
+    font-size: clamp(14px, 3.5vw, 16px);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .result.success .result-title { color: var(--success); }
+  .result.fail    .result-title { color: var(--error); }
+  .result-desc { font-size: clamp(12px, 2.5vw, 13px); color: var(--muted); line-height: 1.65; }
+  .result-time { font-size: clamp(11px, 2vw, 12px); color: var(--muted); margin-top: 5px; opacity: .8; }
+
+  /* ── Spinner ── */
+  .spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Divider & hint ── */
+  .divider { height: 1px; background: var(--border); margin: clamp(20px, 4vw, 30px) 0 clamp(14px, 3vw, 20px); }
+  .hint {
+    font-size: clamp(11px, 2vw, 12px);
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.75;
+    opacity: .8;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <div class="logo">
+    <div class="logo-icon">✦</div>
+    <span class="logo-text">設計群專題競賽複賽</span>
+  </div>
+
+  <h1>創意組線上報名查詢</h1>
+  <p class="subtitle">請填寫以下所有欄位，系統將確認您的報名狀態。</p>
+
+  <div class="field">
+    <label for="workInput">作品名稱</label>
+    <input id="workInput" type="text" placeholder="請輸入作品名稱">
+  </div>
+
+  <!-- 縣市 + 學校 連動（寬螢幕兩欄，窄螢幕單欄） -->
+  <div class="field-row">
+    <div class="field" style="margin-bottom:0">
+      <label for="citySelect">縣市</label>
+      <select id="citySelect" onchange="onCityChange()">
+        <option value="">── 縣市 ──</option>
+      </select>
+    </div>
+    <div class="field" style="margin-bottom:0">
+      <label for="schoolSelect">學校名稱</label>
+      <select id="schoolSelect" disabled>
+        <option value="">── 請先選擇縣市 ──</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="teacherInput">指導老師姓名</label>
+    <input id="teacherInput" type="text" placeholder="請輸入指導老師1姓名">
+  </div>
+
+  <div class="field">
+    <label for="studentInput">參賽學生（組長）姓名</label>
+    <input id="studentInput" type="text" placeholder="請輸入參賽學生1（組長）姓名">
+  </div>
+
+  <button id="queryBtn" onclick="doQuery()">查詢報名狀態</button>
+
+  <div class="result" id="result">
+    <div class="result-icon" id="resultIcon"></div>
+    <div class="result-body">
+      <div class="result-title" id="resultTitle"></div>
+      <div class="result-desc"  id="resultDesc"></div>
+      <div class="result-time"  id="resultTime"></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <p class="hint">如有任何問題，請聯繫活動主辦單位。<br>資料查詢以系統紀錄為準。</p>
+</div>
+
+<script>
+  // 學校資料（來源：受文者清單，共 110 所學校）
+  var SCHOOL_DATA = {"基隆市": ["二信學校財團法人基隆市二信高級中學", "國立基隆高級商工職業學校"], "臺北市": ["育達學校財團法人臺北市私立育達高級中等學校", "臺北市私立南華高級中學職業進修學校", "臺北市私立大誠高級中學", "臺北市私立志仁高級中學職業進修學校", "臺北市私立景文高級中學", "臺北市私立泰北高級中學", "臺北市私立滬江高級中學", "臺北市私立稻江高級商業職業學校", "臺北市私立金甌女子高級中學", "臺北市立士林高級商業職業學校", "臺北市立大安高級工業職業學校", "臺北市立木柵高級工業職業學校", "臺北市立松山高級商業家事職業學校", "開南學校財團法人臺北市開南高級中等學校"], "新北市": ["新北市私立復興高級商工職業學校", "新北市私立淡江高級中學", "新北市私立豫章高級工商職業學校", "新北市立光復高級中學", "新北市立瑞芳高級工業職業學校", "新北市立鶯歌高級工商職業學校", "智光學校財團法人新北市智光高級商工職業學校", "穀保學校財團法人新北市穀保高級家事商業職業學校", "能仁學校財團法人新北市能仁高級家事商業職業學校"], "桃園市": ["六和學校財團法人桃園市六和高級中等學校", "啟英學校財團法人桃園市啟英高級中等學校", "大興學校財團法人桃園市大興高級中等學校", "天主教振聲學校財團法人桃園市振聲高級中等學校", "新興學校財團法人桃園市新興高級中等學校", "桃園市立壽山高級中等學校", "桃園育達學校財團法人桃園市育達高級中等學校", "永平學校財團法人桃園市私立永平工商高級中等學校", "至善學校財團法人桃園市至善高級中等學校"], "新竹市": ["國立新竹高級工業職業學校", "新竹市世界高級中學", "新竹市私立光復高級中學", "新竹市立香山高級中學"], "新竹縣": ["內思學校財團法人新竹縣內思工業高級中等學校", "新竹縣私立義民高級中學"], "苗栗縣": ["國立大湖高級農工職業學校", "國立苗栗高級商業職業學校", "苗栗縣私立龍德家事商業職業學校", "苗栗縣立三義高級中學", "苗栗縣立苑裡高級中學"], "臺中市": ["光華學校財團法人臺中市光華高級工業職業學校", "嘉陽學校財團法人臺中市嘉陽高級中學", "明德學校財團法人臺中市明德高級中學", "永誠學校財團法人臺中市大明高級中等學校", "臺中市明台高級中學", "臺中市私立僑泰高級中學", "臺中市私立嶺東高級中學", "臺中市私立慈明高級中學", "臺中市私立新民高級中學", "臺中市私立明道高級中學", "臺中市立大甲高級中等學校", "臺中市立東勢工業高級中等學校", "臺中市立臺中家事商業高級中等學校", "臺中市立臺中工業高級中等學校"], "彰化縣": ["國立二林高級工商職業學校", "國立北斗高級家事商業職業學校", "國立員林崇實高級工業職業學校", "國立彰化高級商業職業學校", "國立永靖高級工業職業學校", "國立秀水高級工業職業學校", "彰化縣私立文興高級中學"], "南投縣": ["國立南投高級中學", "國立竹山高級中學"], "雲林縣": ["國立土庫高級商工職業學校", "國立斗六高級家事商業職業學校", "國立華南高級商業職業學校", "雲林縣私立大成高級商工職業學校"], "嘉義縣": ["嘉義縣私立萬能高級工商職業學校"], "嘉義市": ["嘉義市私立東吳高級工業家事職業學校", "嘉義市私立輔仁高級中學", "國立嘉義高級商業職業學校", "國立嘉義高級工業職業學校"], "臺南市": ["國立後壁高級中學", "國立成功大學附屬臺南工業高級中等學校", "國立新豐高級中學", "國立曾文高級家事商業職業學校", "國立玉井高級工商職業學校", "國立臺南高級商業職業學校", "臺南光華學校財團法人臺南市光華高級中學", "臺南市私立育德工業家事職業學校", "臺南市私立長榮高級中學", "陽明學校財團法人臺南市陽明高級工商職業學校"], "高雄市": ["中山學校財團法人高雄市中山高級工商職業學校", "國立岡山高級農工職業學校", "國立旗美高級中學", "國立鳳山高級商工職業學校", "天主教明誠學校財團法人高雄市明誠高級中學", "高雄市私立三信高級家事商業職業學校", "高雄市私立樹德高級家事商業職業學校", "高雄市立三民高級家事商業職業學校", "高雄市立中正高級工業職業學校", "高雄市立海青高級工商職業學校", "高雄市立高雄高級商業職業學校", "高雄市立高雄高級工業職業學校", "高雄縣私立高英高級工商職業學校"], "屏東縣": ["屏東縣私立民生高級家事商業職業學校", "屏榮學校財團法人屏東縣屏榮高級中學"], "宜蘭縣": ["國立宜蘭高級商業職業學校", "國立羅東高級商業職業學校"], "花蓮縣": ["國立玉里高級中學", "國立花蓮高級商業職業學校", "花蓮縣私立海星高級中學"], "臺東縣": ["國立臺東專科學校高職部", "國立臺東高級商業職業學校", "臺東縣私立公東高級工業職業學校"]};
+
+  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzb-DUa_EzTJMD8zOdfWcgzog6G3TDVQE5cSPnseFk_emufhPqcWF0bJHabDmm23FlPww/exec';
+
+  // 頁面載入 → 填入縣市
+  window.onload = function() {
+    var sel = document.getElementById('citySelect');
+    Object.keys(SCHOOL_DATA).forEach(function(city) {
+      var opt = document.createElement('option');
+      opt.value = opt.textContent = city;
+      sel.appendChild(opt);
+    });
+  };
+
+  // 縣市變更 → 更新學校
+  function onCityChange() {
+    var city = document.getElementById('citySelect').value;
+    var sel  = document.getElementById('schoolSelect');
+    sel.innerHTML = '';
+    document.getElementById('result').className = 'result';
+
+    if (!city) {
+      sel.innerHTML = '<option value="">── 請先選擇縣市 ──</option>';
+      sel.disabled = true;
+      return;
+    }
+    var list = SCHOOL_DATA[city] || [];
+    sel.innerHTML = '<option value="">── 請選擇學校 ──</option>';
+    list.forEach(function(s) {
+      var opt = document.createElement('option');
+      opt.value = opt.textContent = s;
+      sel.appendChild(opt);
+    });
+    sel.disabled = false;
+  }
+
+  // JSONP
+  function jsonpCall(params, cb) {
+    var name = 'cb_' + Date.now();
+    var url  = SCRIPT_URL + '?callback=' + name;
+    Object.keys(params).forEach(function(k) {
+      url += '&' + k + '=' + encodeURIComponent(params[k]);
+    });
+    window[name] = function(res) {
+      var el = document.getElementById('_jscript');
+      if (el) el.remove();
+      delete window[name];
+      cb(res);
+    };
+    var s  = document.createElement('script');
+    s.id   = '_jscript';
+    s.src  = url;
+    s.onerror = function() {
+      var el = document.getElementById('_jscript');
+      if (el) el.remove();
+      delete window[name];
+      cb({ status:'error', message:'連線失敗，請重新整理頁面。' });
+    };
+    document.body.appendChild(s);
+  }
+
+  document.addEventListener('keydown', function(e) { if (e.key==='Enter') doQuery(); });
+
+  function doQuery() {
+    var work    = document.getElementById('workInput').value.trim();
+    var school  = document.getElementById('schoolSelect').value;
+    var teacher = document.getElementById('teacherInput').value.trim();
+    var student = document.getElementById('studentInput').value.trim();
+    var btn     = document.getElementById('queryBtn');
+
+    if (!work || !school || !teacher || !student) {
+      showResult(false,'⚠️ 請填寫所有欄位','四個欄位皆為必填，請確認後再查詢。','');
+      return;
+    }
+    btn.disabled  = true;
+    btn.innerHTML = '<span class="spinner"></span>查詢中…';
+    document.getElementById('result').className = 'result';
+
+    jsonpCall({
+      action: 'check',
+      data: JSON.stringify({ work:work, school:school, teacher:teacher, student:student })
+    }, function(res) {
+      resetBtn();
+      if (res.status === 'error') {
+        showResult(false, '系統錯誤', res.message || '請稍後再試。', '');
+        return;
+      }
+      if (res.data.found) {
+        showResult(true, '✅ 報名完成', '您的線上報名已確認無誤。',
+          res.data.time ? '填報時間：' + res.data.time : '');
+      } else {
+        showResult(false, '❌ 查無資料', '請確認填寫內容是否正確，或於期限內線上報名。', '');
+      }
+    });
+  }
+
+  function showResult(ok, title, desc, time) {
+    var el = document.getElementById('result');
+    document.getElementById('resultIcon').textContent  = ok ? '🎉' : '😔';
+    document.getElementById('resultTitle').textContent = title;
+    document.getElementById('resultDesc').textContent  = desc;
+    document.getElementById('resultTime').textContent  = time;
+    el.className = 'result show ' + (ok ? 'success' : 'fail');
+  }
+
+  function resetBtn() {
+    var b = document.getElementById('queryBtn');
+    b.disabled = false;
+    b.textContent = '查詢報名狀態';
+  }
+</script>
+</body>
+</html>
